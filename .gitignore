@@ -1,8 +1,8 @@
 # Binario ejecutable
-vaca-shell/vacashell
+vaca-shell/
 
 # Archivos objeto
-vaca-shell/obj/*.o
+vaca-shell/
 
 # Archivos temporales
 *~
