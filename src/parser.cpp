@@ -91,3 +91,49 @@ std::vector<std::string> Parser::split_by_pipes(const std::string& line) {
     
     return parts;
 }
+
+Command Parser::parse_command(const std::vector<std::string>& tokens) {
+    Command cmd;
+    
+    if (tokens.empty()) {
+        return cmd;
+    }
+    
+    size_t i = 0;
+    cmd.program = tokens[i++];
+    
+    while (i < tokens.size()) {
+        const std::string& token = tokens[i];
+        
+        if (token == "<") {
+            if (i + 1 < tokens.size()) {
+                cmd.input_file = tokens[++i];
+            }
+            i++;
+        }
+        else if (token == ">>") {
+            if (i + 1 < tokens.size()) {
+                cmd.output_file = tokens[++i];
+                cmd.append_output = true;
+            }
+            i++;
+        }
+        else if (token == ">") {
+            if (i + 1 < tokens.size()) {
+                cmd.output_file = tokens[++i];
+                cmd.append_output = false;
+            }
+            i++;
+        }
+        else if (token == "&") {
+            cmd.background = true;
+            i++;
+        }
+        else {
+            cmd.args.push_back(token);
+            i++;
+        }
+    }
+    
+    return cmd;
+}
