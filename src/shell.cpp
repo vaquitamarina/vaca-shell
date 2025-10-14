@@ -77,3 +77,42 @@ bool VacaShell::read_line(std::string& line) {
     }
     return true;
 }
+
+void VacaShell::process_line(const std::string& line) {
+    if (!Parser::is_empty_or_comment(line)) {
+        builtins.add_to_history(line);
+    }
+    
+    Pipeline pipeline = Parser::parse_line(line);
+    
+    if (pipeline.is_empty()) {
+        return;
+    }
+    
+    const Command& first_cmd = pipeline.commands[0];
+    
+    std::string expanded = builtins.expand_alias(first_cmd.program);
+    if (expanded != first_cmd.program) {
+        std::string new_line = expanded;
+        for (const auto& arg : first_cmd.args) {
+            new_line += " " + arg;
+        }
+        pipeline = Parser::parse_line(new_line);
+        
+        if (pipeline.is_empty()) {
+            return;
+        }
+    }
+    
+    if (pipeline.is_simple() && builtins.is_builtin(pipeline.commands[0].program)) {
+        last_exit_code = builtins.execute_builtin(pipeline.commands[0]);
+        
+        if (pipeline.commands[0].program == "jobs" || 
+            pipeline.commands[0].program == "trabajos") {
+            executor.show_jobs();
+        }
+    }
+    else {
+        last_exit_code = executor.execute_pipeline(pipeline);
+    }
+}
