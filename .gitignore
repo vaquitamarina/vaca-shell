@@ -1,8 +1,11 @@
 # Binario ejecutable
 vaca-shell/
 
+vacashell
+
 # Archivos objeto
 obj/*.o
+
 
 # Archivos temporales
 *~
