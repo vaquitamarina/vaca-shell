@@ -65,3 +65,29 @@ std::vector<std::string> Parser::tokenize(const std::string& str) {
     
     return tokens;
 }
+
+std::vector<std::string> Parser::split_by_pipes(const std::string& line) {
+    std::vector<std::string> parts;
+    std::string current;
+    bool in_quotes = false;
+    
+    for (char c : line) {
+        if (c == '"') {
+            in_quotes = !in_quotes;
+            current += c;
+        } else if (c == '|' && !in_quotes) {
+            if (!current.empty()) {
+                parts.push_back(trim(current));
+                current.clear();
+            }
+        } else {
+            current += c;
+        }
+    }
+    
+    if (!current.empty()) {
+        parts.push_back(trim(current));
+    }
+    
+    return parts;
+}
