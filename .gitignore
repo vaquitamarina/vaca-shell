@@ -2,7 +2,7 @@
 vaca-shell/
 
 # Archivos objeto
-vaca-shell/
+obj/*.o
 
 # Archivos temporales
 *~
