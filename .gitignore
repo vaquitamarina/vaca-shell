@@ -1,0 +1,11 @@
+# Binario ejecutable
+vaca-shell/vacashell
+
+# Archivos objeto
+vaca-shell/obj/*.o
+
+# Archivos temporales
+*~
+*.swp
+*.swo
+.DS_Store
