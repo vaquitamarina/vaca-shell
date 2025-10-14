@@ -22,3 +22,46 @@ bool Parser::is_empty_or_comment(const std::string& line) {
     std::string trimmed = trim(line);
     return trimmed.empty() || trimmed[0] == '#';
 }
+
+std::vector<std::string> Parser::tokenize(const std::string& str) {
+    std::vector<std::string> tokens;
+    std::string current;
+    bool in_quotes = false;
+    bool escaped = false;
+    
+    for (size_t i = 0; i < str.length(); i++) {
+        char c = str[i];
+        
+        if (escaped) {
+            current += c;
+            escaped = false;
+            continue;
+        }
+        
+        if (c == '\\') {
+            escaped = true;
+            continue;
+        }
+        
+        if (c == '"') {
+            in_quotes = !in_quotes;
+            continue;
+        }
+        
+        if (std::isspace(c) && !in_quotes) {
+            if (!current.empty()) {
+                tokens.push_back(current);
+                current.clear();
+            }
+            continue;
+        }
+        
+        current += c;
+    }
+    
+    if (!current.empty()) {
+        tokens.push_back(current);
+    }
+    
+    return tokens;
+}
