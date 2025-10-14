@@ -137,3 +137,40 @@ Command Parser::parse_command(const std::vector<std::string>& tokens) {
     
     return cmd;
 }
+
+Pipeline Parser::parse_line(const std::string& line) {
+    Pipeline pipeline;
+    
+    if (is_empty_or_comment(line)) {
+        return pipeline;
+    }
+    
+    std::vector<std::string> parts = split_by_pipes(line);
+    
+    bool has_background = false;
+    if (!parts.empty()) {
+        std::string& last_part = parts.back();
+        size_t amp_pos = last_part.find('&');
+        if (amp_pos != std::string::npos) {
+            has_background = true;
+            last_part = trim(last_part.substr(0, amp_pos));
+        }
+    }
+    
+    for (const auto& part : parts) {
+        std::vector<std::string> tokens = tokenize(part);
+        if (!tokens.empty()) {
+            Command cmd = parse_command(tokens);
+            if (!cmd.is_empty()) {
+                pipeline.commands.push_back(cmd);
+            }
+        }
+    }
+    
+    if (has_background && !pipeline.commands.empty()) {
+        pipeline.background = true;
+        pipeline.commands.back().background = true;
+    }
+    
+    return pipeline;
+}
