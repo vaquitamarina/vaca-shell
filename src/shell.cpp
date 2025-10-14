@@ -34,3 +34,46 @@ void VacaShell::initialize() {
     std::cout << "╚═══════════════════════════════════════════════════════════╝\n";
     std::cout << "\n";
 }
+
+void VacaShell::show_prompt() const {
+    const char* user = getenv("USER");
+    if (user == nullptr) user = "usuario";
+    
+    char hostname[256];
+    if (gethostname(hostname, sizeof(hostname)) != 0) {
+        strcpy(hostname, "localhost");
+    }
+    
+    char cwd[PATH_MAX];
+    if (getcwd(cwd, sizeof(cwd)) == nullptr) {
+        strcpy(cwd, "?");
+    }
+    
+    std::string dir_name = cwd;
+    size_t last_slash = dir_name.find_last_of('/');
+    if (last_slash != std::string::npos && last_slash < dir_name.length() - 1) {
+        dir_name = dir_name.substr(last_slash + 1);
+    }
+    else if (dir_name == "/") {
+        dir_name = "/";
+    }
+    
+    std::string symbol = (last_exit_code == 0) ? "🐮" : "❌";
+    
+    std::cout << "\033[1;32m" << user << "@" << hostname << "\033[0m"
+              << ":\033[1;34m" << dir_name << "\033[0m"
+              << " " << symbol << " $ ";
+    std::cout.flush();
+}
+
+bool VacaShell::read_line(std::string& line) {
+    if (!std::getline(std::cin, line)) {
+        if (std::cin.eof()) {
+            std::cout << "\n¡Hasta luego! 👋\n";
+            return false;
+        }
+        std::cin.clear();
+        return true;
+    }
+    return true;
+}
