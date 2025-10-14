@@ -116,3 +116,28 @@ void VacaShell::process_line(const std::string& line) {
         last_exit_code = executor.execute_pipeline(pipeline);
     }
 }
+
+void VacaShell::run() {
+    running = true;
+    std::string line;
+    
+    while (running) {
+        show_prompt();
+        
+        if (!read_line(line)) {
+            break;
+        }
+        
+        if (!line.empty()) {
+            process_line(line);
+        }
+    }
+}
+
+void VacaShell::stop() {
+    running = false;
+}
+
+int VacaShell::get_last_exit_code() const {
+    return last_exit_code;
+}
