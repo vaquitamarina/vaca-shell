@@ -76,3 +76,61 @@ int Builtins::builtin_pwd(const std::vector<std::string>& args) {
         return 1;
     }
 }
+
+int Builtins::builtin_exit(const std::vector<std::string>& args) {
+    int exit_code = 0;
+    
+    if (!args.empty()) {
+        try {
+            exit_code = std::stoi(args[0]);
+        }
+        catch (...) {
+            std::cerr << "exit: Argumento inválido: " << args[0] << std::endl;
+            return 1;
+        }
+    }
+    
+    std::cout << "\n¡Hasta luego! 👋\n" << std::endl;
+    exit(exit_code);
+}
+
+int Builtins::builtin_help(const std::vector<std::string>& args) {
+    (void)args;
+    
+    std::cout << "\n";
+    std::cout << "╔═══════════════════════════════════════════════════════════════╗\n";
+    std::cout << "║              VacaShell - Mini-shell POSIX en C++              ║\n";
+    std::cout << "╚═══════════════════════════════════════════════════════════════╝\n\n";
+    
+    std::cout << "COMANDOS INTERNOS:\n";
+    std::cout << "  cd [dir]         - Cambiar de directorio\n";
+    std::cout << "  pwd              - Mostrar directorio actual\n";
+    std::cout << "  help, ayuda      - Mostrar esta ayuda\n";
+    std::cout << "  history          - Mostrar historial de comandos\n";
+    std::cout << "  alias [x=y]      - Crear o mostrar aliases\n";
+    std::cout << "  jobs, trabajos   - Mostrar trabajos en segundo plano\n";
+    std::cout << "  exit, salir [n]  - Salir (código n opcional)\n\n";
+    
+    std::cout << "CARACTERÍSTICAS:\n";
+    std::cout << "  comando > file   - Redirección de salida (sobrescribir)\n";
+    std::cout << "  comando >> file  - Redirección de salida (agregar)\n";
+    std::cout << "  comando < file   - Redirección de entrada\n";
+    std::cout << "  cmd1 | cmd2      - Pipes (tuberías)\n";
+    std::cout << "  comando &        - Ejecución en segundo plano\n";
+    std::cout << "  # comentario     - Líneas de comentario\n\n";
+    
+    std::cout << "EJEMPLOS:\n";
+    std::cout << "  ls -la\n";
+    std::cout << "  echo 'Hola mundo' > salida.txt\n";
+    std::cout << "  cat archivo.txt | grep patron\n";
+    std::cout << "  sleep 10 &\n";
+    std::cout << "  cat < entrada.txt > salida.txt\n";
+    std::cout << "  ps aux | grep bash | wc -l\n\n";
+    
+    std::cout << "RUTAS:\n";
+    std::cout << "  - Rutas absolutas se ejecutan tal cual: /usr/bin/ls\n";
+    std::cout << "  - Rutas relativas se ejecutan tal cual: ./script.sh\n";
+    std::cout << "  - Nombres simples se buscan en /bin/ y /usr/bin/\n\n";
+    
+    return 0;
+}
