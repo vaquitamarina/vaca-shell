@@ -39,3 +39,26 @@ int Builtins::execute_builtin(const Command& cmd) {
     
     return 0;
 }
+
+int Builtins::builtin_cd(const std::vector<std::string>& args) {
+    std::string path;
+    
+    if (args.empty()) {
+        const char* home = getenv("HOME");
+        if (home == nullptr) {
+            std::cerr << "cd: Error - Variable HOME no definida" << std::endl;
+            return 1;
+        }
+        path = home;
+    }
+    else {
+        path = args[0];
+    }
+    
+    if (chdir(path.c_str()) != 0) {
+        perror(("cd: " + path).c_str());
+        return 1;
+    }
+    
+    return 0;
+}
