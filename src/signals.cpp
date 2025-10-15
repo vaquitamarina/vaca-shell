@@ -3,8 +3,10 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <cstring>
+#include <cerrno> 
 
 
+volatile sig_atomic_t g_child_finished = 0;
 static volatile pid_t foreground_pid = 0;
 
 void SignalHandler::sigint_handler(int signo) {
@@ -21,12 +23,7 @@ void SignalHandler::sigint_handler(int signo) {
 void SignalHandler::sigchld_handler(int signo) {
     (void)signo;
     
-    int saved_errno = errno;
-    
-    while (waitpid(-1, nullptr, WNOHANG) > 0) {
-    }
-    
-    errno = saved_errno;
+    g_child_finished = 1;
 }
 
 void SignalHandler::setup_signals() {
@@ -39,6 +36,16 @@ void SignalHandler::setup_signals() {
     
     if (sigaction(SIGINT, &sa_int, nullptr) < 0) {
         perror("Error al configurar SIGINT");
+    }
+    
+    struct sigaction sa_chld;
+    memset(&sa_chld, 0, sizeof(sa_chld));
+    sa_chld.sa_handler = sigchld_handler;
+    sigemptyset(&sa_chld.sa_mask);
+    sa_chld.sa_flags = SA_RESTART | SA_NOCLDSTOP;
+
+    if (sigaction(SIGCHLD, &sa_chld, nullptr) < 0) {
+        perror("Error al configurar SIGCHLD");
     }
 
     signal(SIGTSTP, SIG_IGN);

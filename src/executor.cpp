@@ -247,13 +247,14 @@ void Executor::collect_background_jobs() {
         pid_t result = waitpid(pid, &status, WNOHANG);
         
         if (result > 0) {
+
             if (WIFEXITED(status)) {
-                cout << "[Proceso " << pid << " (" << it->second 
+                cout << "\n[Proceso " << pid << " (" << it->second 
                         << ") terminó con código " << WEXITSTATUS(status) 
                         << "]" << endl;
             }
             else if (WIFSIGNALED(status)) {
-                cout << "[Proceso " << pid << " (" << it->second 
+                cout << "\n[Proceso " << pid << " (" << it->second 
                         << ") terminado por señal " << WTERMSIG(status) 
                         << "]" << endl;
             }

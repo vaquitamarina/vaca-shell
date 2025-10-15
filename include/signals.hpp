@@ -11,6 +11,7 @@
 
 #include <signal.h>
 
+extern volatile sig_atomic_t g_child_finished;
 /**
  * @class SignalHandler
  * @brief Gestor de señales del sistema

@@ -170,6 +170,11 @@ void VacaShell::run() {
     string line;
     
     while (running) {
+
+        if (g_child_finished) {
+            executor.collect_background_jobs(); 
+            g_child_finished = 0;               
+        }
         show_prompt();
         
         if (!read_line(line)) {
