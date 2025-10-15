@@ -85,3 +85,9 @@ make
 ```bash
 ./vacashell
 ```
+
+### 4. Si hay problemas compilando el make
+
+```bash
+make clean && make
+```
