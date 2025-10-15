@@ -218,3 +218,50 @@ int Executor::execute_piped_commands(const Pipeline& pipeline) {
     
     return last_status;
 }
+
+void Executor::add_background_job(pid_t pid, const string& command) {
+    background_jobs[pid] = command;
+}
+
+void Executor::collect_background_jobs() {
+    auto it = background_jobs.begin();
+    while (it != background_jobs.end()) {
+        pid_t pid = it->first;
+        int status;
+        
+        pid_t result = waitpid(pid, &status, WNOHANG);
+        
+        if (result > 0) {
+            if (WIFEXITED(status)) {
+                cout << "[Proceso " << pid << " (" << it->second 
+                        << ") terminó con código " << WEXITSTATUS(status) 
+                        << "]" << endl;
+            }
+            else if (WIFSIGNALED(status)) {
+                cout << "[Proceso " << pid << " (" << it->second 
+                        << ") terminado por señal " << WTERMSIG(status) 
+                        << "]" << endl;
+            }
+            
+            it = background_jobs.erase(it);
+        }
+        else if (result == 0) {
+            ++it;
+        }
+        else {
+            ++it;
+        }
+    }
+}
+
+void Executor::show_jobs() const {
+    if (background_jobs.empty()) {
+        cout << "No hay trabajos en segundo plano." << endl;
+    }
+    else {
+        cout << "Trabajos en segundo plano:" << endl;
+        for (const auto& job : background_jobs) {
+            cout << "  [" << job.first << "] " << job.second << endl;
+        }
+    }
+}
