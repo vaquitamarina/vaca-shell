@@ -193,3 +193,30 @@ int Builtins::builtin_alias(const vector<string>& args) {
     
     return 0;
 }
+
+int Builtins::builtin_jobs(const vector<string>& args) {
+    (void)args;
+    // Este comando se complementa con Executor::show_jobs()
+    cout << "(El listado de jobs lo muestra el executor)\n";
+    return 0;
+}
+
+void Builtins::add_to_history(const string& line) {
+    if (!line.empty()) {
+        history.push_back(line);
+        
+        // Limitar tamaño del historial
+        const size_t MAX_HISTORY = 1000;
+        if (history.size() > MAX_HISTORY) {
+            history.erase(history.begin());
+        }
+    }
+}
+
+string Builtins::expand_alias(const string& cmd) const {
+    auto it = aliases.find(cmd);
+    if (it != aliases.end()) {
+        return it->second;
+    }
+    return cmd;
+}
