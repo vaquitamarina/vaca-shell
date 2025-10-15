@@ -219,6 +219,21 @@ int Executor::execute_piped_commands(const Pipeline& pipeline) {
     return last_status;
 }
 
+int Executor::execute_pipeline(const Pipeline& pipeline) {
+    if (pipeline.is_empty()) {
+        return 0;
+    }
+    
+    collect_background_jobs();
+    
+    if (pipeline.is_simple()) {
+        return execute_simple_command(pipeline.commands[0]);
+    }
+    else {
+        return execute_piped_commands(pipeline);
+    }
+}
+
 void Executor::add_background_job(pid_t pid, const string& command) {
     background_jobs[pid] = command;
 }

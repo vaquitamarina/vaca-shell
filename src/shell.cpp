@@ -63,8 +63,8 @@ void VacaShell::show_prompt() const {
     string symbol = (last_exit_code == 0) ? "🐮" : "❌";
     
     cout << "\033[1;32m" << user << "@" << hostname << "\033[0m"
-              << ":\033[1;34m" << dir_name << "\033[0m"
-              << " " << symbol << " $ ";
+            << ":\033[1;34m" << dir_name << "\033[0m"
+            << " " << symbol << " $ ";
     cout.flush();
 }
 
