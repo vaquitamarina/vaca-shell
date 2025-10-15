@@ -126,3 +126,95 @@ int Executor::execute_simple_command(const Command& cmd) {
     
     return 0;
 }
+
+int Executor::execute_piped_commands(const Pipeline& pipeline) {
+    size_t n = pipeline.size();
+    if (n == 0) return 0;
+    
+    vector<pid_t> pids;
+    
+    vector<array<int, 2>> pipes(n - 1);
+    for (size_t i = 0; i < n - 1; i++) {
+        if (pipe(pipes[i].data()) < 0) {
+            perror("Error al crear pipe");
+            return -1;
+        }
+    }
+    
+    for (size_t i = 0; i < n; i++) {
+        const Command& cmd = pipeline.commands[i];
+        string program_path = resolve_path(cmd.program);
+        
+        pid_t pid = fork();
+        
+        if (pid < 0) {
+            perror("Error en fork (pipeline)");
+            return -1;
+        }
+        else if (pid == 0) {
+            
+            if (i > 0) {
+                if (dup2(pipes[i-1][0], STDIN_FILENO) < 0) {
+                    perror("Error en dup2 (stdin pipe)");
+                    exit(EXIT_FAILURE);
+                }
+            }
+            
+            if (i < n - 1) {
+                if (dup2(pipes[i][1], STDOUT_FILENO) < 0) {
+                    perror("Error en dup2 (stdout pipe)");
+                    exit(EXIT_FAILURE);
+                }
+            }
+            
+            for (size_t j = 0; j < n - 1; j++) {
+                close(pipes[j][0]);
+                close(pipes[j][1]);
+            }
+            
+            if (!setup_redirections(cmd)) {
+                exit(EXIT_FAILURE);
+            }
+            
+            char** argv = cmd.to_argv();
+            execvp(program_path.c_str(), argv);
+            
+            cerr << "Error: No se pudo ejecutar '" << cmd.program << "': ";
+            perror("");
+            Command::free_argv(argv);
+            exit(EXIT_FAILURE);
+        }
+        else {
+            pids.push_back(pid);
+        }
+    }
+    
+    for (size_t i = 0; i < n - 1; i++) {
+        close(pipes[i][0]);
+        close(pipes[i][1]);
+    }
+    
+    int last_status = 0;
+    
+    if (pipeline.background) {
+        cout << "[Pipeline en segundo plano] PIDs:";
+        for (pid_t pid : pids) {
+            cout << " " << pid;
+            add_background_job(pid, "pipeline");
+        }
+        cout << endl;
+    }
+    else {
+        for (pid_t pid : pids) {
+            int status;
+            if (waitpid(pid, &status, 0) < 0) {
+                perror("Error en waitpid (pipeline)");
+            }
+            else if (WIFEXITED(status)) {
+                last_status = WEXITSTATUS(status);
+            }
+        }
+    }
+    
+    return last_status;
+}
