@@ -70,7 +70,7 @@ sudo pacman -S base-devel git
 ### 1. Clonar o descargar el repositorio
 
 ```bash
-git clone https://github.com/tuusuario/vaca-shell.git
+git clone https://github.com/vaquitamarina/vaca-shell.git
 cd vaca-shell
 ```
 
