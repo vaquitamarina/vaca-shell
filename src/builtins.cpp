@@ -62,3 +62,17 @@ int Builtins::builtin_cd(const std::vector<std::string>& args) {
     
     return 0;
 }
+
+int Builtins::builtin_pwd(const std::vector<std::string>& args) {
+    (void)args; // No usado
+    
+    char cwd[PATH_MAX];
+    if (getcwd(cwd, sizeof(cwd)) != nullptr) {
+        std::cout << cwd << std::endl;
+        return 0;
+    }
+    else {
+        perror("pwd");
+        return 1;
+    }
+}
