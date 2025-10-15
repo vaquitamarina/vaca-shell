@@ -2,6 +2,8 @@
 #include <iostream>
 #include <cstring>
 
+using namespace std;
+
 Command::Command() : append_output(false), background(false) {}
 
 char** Command::to_argv() const {
@@ -33,24 +35,24 @@ bool Command::is_empty() const {
 }
 
 void Command::print() const {
-    std::cout << "Comando: " << program;
+    cout << "Comando: " << program;
     for (const auto& arg : args) {
-        std::cout << " " << arg;
+        cout << " " << arg;
     }
     
     if (!input_file.empty()) {
-        std::cout << " < " << input_file;
+        cout << " < " << input_file;
     }
     
     if (!output_file.empty()) {
-        std::cout << (append_output ? " >> " : " > ") << output_file;
+        cout << (append_output ? " >> " : " > ") << output_file;
     }
     
     if (background) {
-        std::cout << " &";
+        cout << " &";
     }
     
-    std::cout << std::endl;
+    cout << endl;
 }
 
 Pipeline::Pipeline() : background(false) {}

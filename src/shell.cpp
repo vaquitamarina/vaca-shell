@@ -5,6 +5,8 @@
 #include <limits.h>
 #include <cstring>
 
+using namespace std;
+
 VacaShell::VacaShell() : running(false), last_exit_code(0) {}
 
 VacaShell::~VacaShell() {}
@@ -12,27 +14,27 @@ VacaShell::~VacaShell() {}
 void VacaShell::initialize() {
     SignalHandler::setup_signals();
     
-    std::cout << "\n";
-    std::cout << "╔═══════════════════════════════════════════════════════════╗\n";
-    std::cout << "║                                                           ║\n";
-    std::cout << "║               🐮  VacaShell v1.0  🐮                      ║\n";
-    std::cout << "║                                                           ║\n";
-    std::cout << "║          Mini-shell POSIX en C++ para Linux               ║\n";
-    std::cout << "║                                                           ║\n";
-    std::cout << "║   Características implementadas:                          ║\n";
-    std::cout << "║   ✓ Ejecución de comandos (fork + execvp)                ║\n";
-    std::cout << "║   ✓ Resolución de rutas (/bin/ por defecto)              ║\n";
-    std::cout << "║   ✓ Redirecciones: >, >>, <                              ║\n";
-    std::cout << "║   ✓ Pipes: cmd1 | cmd2 | cmd3                            ║\n";
-    std::cout << "║   ✓ Ejecución en segundo plano: &                        ║\n";
-    std::cout << "║   ✓ Comandos internos: cd, pwd, help, etc.               ║\n";
-    std::cout << "║   ✓ Manejo de señales: SIGINT, SIGCHLD                   ║\n";
-    std::cout << "║                                                           ║\n";
-    std::cout << "║   Escribe 'help' para ver ayuda completa                 ║\n";
-    std::cout << "║   Escribe 'salir' o 'exit' para salir                    ║\n";
-    std::cout << "║                                                           ║\n";
-    std::cout << "╚═══════════════════════════════════════════════════════════╝\n";
-    std::cout << "\n";
+    cout << "\n";
+    cout << "╔═══════════════════════════════════════════════════════════╗\n";
+    cout << "║                                                           ║\n";
+    cout << "║               🐮  VacaShell v1.0  🐮                      ║\n";
+    cout << "║                                                           ║\n";
+    cout << "║          Mini-shell POSIX en C++ para Linux               ║\n";
+    cout << "║                                                           ║\n";
+    cout << "║   Características implementadas:                          ║\n";
+    cout << "║   ✓ Ejecución de comandos (fork + execvp)                ║\n";
+    cout << "║   ✓ Resolución de rutas (/bin/ por defecto)              ║\n";
+    cout << "║   ✓ Redirecciones: >, >>, <                              ║\n";
+    cout << "║   ✓ Pipes: cmd1 | cmd2 | cmd3                            ║\n";
+    cout << "║   ✓ Ejecución en segundo plano: &                        ║\n";
+    cout << "║   ✓ Comandos internos: cd, pwd, help, etc.               ║\n";
+    cout << "║   ✓ Manejo de señales: SIGINT, SIGCHLD                   ║\n";
+    cout << "║                                                           ║\n";
+    cout << "║   Escribe 'help' para ver ayuda completa                 ║\n";
+    cout << "║   Escribe 'salir' o 'exit' para salir                    ║\n";
+    cout << "║                                                           ║\n";
+    cout << "╚═══════════════════════════════════════════════════════════╝\n";
+    cout << "\n";
 }
 
 void VacaShell::show_prompt() const {
@@ -49,36 +51,36 @@ void VacaShell::show_prompt() const {
         strcpy(cwd, "?");
     }
     
-    std::string dir_name = cwd;
+    string dir_name = cwd;
     size_t last_slash = dir_name.find_last_of('/');
-    if (last_slash != std::string::npos && last_slash < dir_name.length() - 1) {
+    if (last_slash != string::npos && last_slash < dir_name.length() - 1) {
         dir_name = dir_name.substr(last_slash + 1);
     }
     else if (dir_name == "/") {
         dir_name = "/";
     }
     
-    std::string symbol = (last_exit_code == 0) ? "🐮" : "❌";
+    string symbol = (last_exit_code == 0) ? "🐮" : "❌";
     
-    std::cout << "\033[1;32m" << user << "@" << hostname << "\033[0m"
+    cout << "\033[1;32m" << user << "@" << hostname << "\033[0m"
               << ":\033[1;34m" << dir_name << "\033[0m"
               << " " << symbol << " $ ";
-    std::cout.flush();
+    cout.flush();
 }
 
-bool VacaShell::read_line(std::string& line) {
-    if (!std::getline(std::cin, line)) {
-        if (std::cin.eof()) {
-            std::cout << "\n¡Hasta luego! 👋\n";
+bool VacaShell::read_line(string& line) {
+    if (!getline(cin, line)) {
+        if (cin.eof()) {
+            cout << "\n¡Hasta luego! 👋\n";
             return false;
         }
-        std::cin.clear();
+        cin.clear();
         return true;
     }
     return true;
 }
 
-void VacaShell::process_line(const std::string& line) {
+void VacaShell::process_line(const string& line) {
     if (!Parser::is_empty_or_comment(line)) {
         builtins.add_to_history(line);
     }
@@ -91,9 +93,9 @@ void VacaShell::process_line(const std::string& line) {
     
     const Command& first_cmd = pipeline.commands[0];
     
-    std::string expanded = builtins.expand_alias(first_cmd.program);
+    string expanded = builtins.expand_alias(first_cmd.program);
     if (expanded != first_cmd.program) {
-        std::string new_line = expanded;
+        string new_line = expanded;
         for (const auto& arg : first_cmd.args) {
             new_line += " " + arg;
         }
@@ -119,7 +121,7 @@ void VacaShell::process_line(const std::string& line) {
 
 void VacaShell::run() {
     running = true;
-    std::string line;
+    string line;
     
     while (running) {
         show_prompt();

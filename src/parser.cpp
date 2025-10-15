@@ -3,29 +3,31 @@
 #include <algorithm>
 #include <cctype>
 
-std::string Parser::trim(const std::string& str) {
+using namespace std;
+
+string Parser::trim(const string& str) {
     size_t start = 0;
     size_t end = str.length();
     
-    while (start < end && std::isspace(str[start])) {
+    while (start < end && isspace(str[start])) {
         start++;
     }
     
-    while (end > start && std::isspace(str[end - 1])) {
+    while (end > start && isspace(str[end - 1])) {
         end--;
     }
     
     return str.substr(start, end - start);
 }
 
-bool Parser::is_empty_or_comment(const std::string& line) {
-    std::string trimmed = trim(line);
+bool Parser::is_empty_or_comment(const string& line) {
+    string trimmed = trim(line);
     return trimmed.empty() || trimmed[0] == '#';
 }
 
-std::vector<std::string> Parser::tokenize(const std::string& str) {
-    std::vector<std::string> tokens;
-    std::string current;
+vector<string> Parser::tokenize(const string& str) {
+    vector<string> tokens;
+    string current;
     bool in_quotes = false;
     bool escaped = false;
     
@@ -48,7 +50,7 @@ std::vector<std::string> Parser::tokenize(const std::string& str) {
             continue;
         }
         
-        if (std::isspace(c) && !in_quotes) {
+        if (isspace(c) && !in_quotes) {
             if (!current.empty()) {
                 tokens.push_back(current);
                 current.clear();
@@ -66,9 +68,9 @@ std::vector<std::string> Parser::tokenize(const std::string& str) {
     return tokens;
 }
 
-std::vector<std::string> Parser::split_by_pipes(const std::string& line) {
-    std::vector<std::string> parts;
-    std::string current;
+vector<string> Parser::split_by_pipes(const string& line) {
+    vector<string> parts;
+    string current;
     bool in_quotes = false;
     
     for (char c : line) {
@@ -92,7 +94,7 @@ std::vector<std::string> Parser::split_by_pipes(const std::string& line) {
     return parts;
 }
 
-Command Parser::parse_command(const std::vector<std::string>& tokens) {
+Command Parser::parse_command(const vector<string>& tokens) {
     Command cmd;
     
     if (tokens.empty()) {
@@ -103,7 +105,7 @@ Command Parser::parse_command(const std::vector<std::string>& tokens) {
     cmd.program = tokens[i++];
     
     while (i < tokens.size()) {
-        const std::string& token = tokens[i];
+        const string& token = tokens[i];
         
         if (token == "<") {
             if (i + 1 < tokens.size()) {
@@ -138,27 +140,27 @@ Command Parser::parse_command(const std::vector<std::string>& tokens) {
     return cmd;
 }
 
-Pipeline Parser::parse_line(const std::string& line) {
+Pipeline Parser::parse_line(const string& line) {
     Pipeline pipeline;
     
     if (is_empty_or_comment(line)) {
         return pipeline;
     }
     
-    std::vector<std::string> parts = split_by_pipes(line);
+    vector<string> parts = split_by_pipes(line);
     
     bool has_background = false;
     if (!parts.empty()) {
-        std::string& last_part = parts.back();
+        string& last_part = parts.back();
         size_t amp_pos = last_part.find('&');
-        if (amp_pos != std::string::npos) {
+        if (amp_pos != string::npos) {
             has_background = true;
             last_part = trim(last_part.substr(0, amp_pos));
         }
     }
     
     for (const auto& part : parts) {
-        std::vector<std::string> tokens = tokenize(part);
+        vector<string> tokens = tokenize(part);
         if (!tokens.empty()) {
             Command cmd = parse_command(tokens);
             if (!cmd.is_empty()) {
