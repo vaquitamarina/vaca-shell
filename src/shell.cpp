@@ -30,8 +30,8 @@ void VacaShell::initialize() {
     cout << "║   ✓ Comandos internos: cd, pwd, help, etc.               ║\n";
     cout << "║   ✓ Manejo de señales: SIGINT, SIGCHLD                   ║\n";
     cout << "║                                                           ║\n";
-    cout << "║   Escribe 'help' para ver ayuda completa                 ║\n";
-    cout << "║   Escribe 'salir' o 'exit' para salir                    ║\n";
+    cout << "║   Escribe 'help' para ver ayuda completa                  ║\n";
+    cout << "║   Escribe 'salir' o 'exit' para salir                     ║\n";
     cout << "║                                                           ║\n";
     cout << "╚═══════════════════════════════════════════════════════════╝\n";
     cout << "\n";
