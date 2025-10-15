@@ -8,6 +8,8 @@
 
 using namespace std;
 
+Builtins::Builtins() : history_index(0) {}
+
 bool Builtins::is_builtin(const string& cmd) const {
     return cmd == "cd" || cmd == "pwd" || cmd == "exit" || cmd == "salir" ||
         cmd == "help" || cmd == "ayuda" || cmd == "history" || cmd == "historial" ||
@@ -196,21 +198,20 @@ int Builtins::builtin_alias(const vector<string>& args) {
 
 int Builtins::builtin_jobs(const vector<string>& args) {
     (void)args;
-    // Este comando se complementa con Executor::show_jobs()
     cout << "(El listado de jobs lo muestra el executor)\n";
     return 0;
 }
 
 void Builtins::add_to_history(const string& line) {
-    if (!line.empty()) {
+    if (!line.empty() && (history.empty() || history.back() != line)) {
         history.push_back(line);
         
-        // Limitar tamaño del historial
         const size_t MAX_HISTORY = 1000;
         if (history.size() > MAX_HISTORY) {
             history.erase(history.begin());
         }
     }
+    reset_history_index();
 }
 
 string Builtins::expand_alias(const string& cmd) const {
@@ -219,4 +220,27 @@ string Builtins::expand_alias(const string& cmd) const {
         return it->second;
     }
     return cmd;
+}
+
+void Builtins::reset_history_index() {
+    history_index = history.size();
+}
+
+std::string Builtins::get_previous_command() {
+    if (history.empty() || history_index <= 0) {
+        if (history.empty()) return "";
+        history_index = 0;
+        return history[history_index];
+    }
+    history_index--;
+    return history[history_index];
+}
+
+std::string Builtins::get_next_command() {
+    if (history.empty() || history_index >= static_cast<int>(history.size()) - 1) {
+        reset_history_index();
+        return "";
+    }
+    history_index++;
+    return history[history_index];
 }

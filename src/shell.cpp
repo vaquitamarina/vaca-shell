@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <limits.h>
 #include <cstring>
+#include <termios.h>
 
 using namespace std;
 
@@ -71,15 +72,58 @@ void VacaShell::show_prompt() const {
 }
 
 bool VacaShell::read_line(string& line) {
-    if (!getline(cin, line)) {
-        if (cin.eof()) {
-            cout << "\n¡Hasta luego! 👋\n";
-            return false;
+    struct termios old_tio, new_tio;
+    char c;
+
+    tcgetattr(STDIN_FILENO, &old_tio);
+    new_tio = old_tio;
+    new_tio.c_lflag &= ~(ICANON | ECHO);
+    tcsetattr(STDIN_FILENO, TCSANOW, &new_tio);
+
+    line.clear();
+    builtins.reset_history_index();
+
+    while (true) {
+        c = getchar();
+
+        if (c == '\n') {
+            cout << endl;
+            break;
+        } else if (c == 127 || c == '\b') { 
+            if (!line.empty()) {
+                line.pop_back();
+                cout << "\b \b";
+                cout.flush();
+            }
+        } else if (c == '\x1b') {
+            if (getchar() == '[') {
+                string history_command;
+                switch (getchar()) {
+                    case 'A':
+                        history_command = builtins.get_previous_command();
+                        break;
+                    case 'B':
+                        history_command = builtins.get_next_command();
+                        break;
+                    default:
+                        continue;
+                }
+                
+                cout << "\r";
+                show_prompt();
+                cout << "\x1b[K"; 
+                line = history_command;
+                cout << line;
+                cout.flush();
+            }
+        } else if (isprint(c)) {
+            line += c;
+            cout << c;
+            cout.flush(); 
         }
-        cin.clear();
-        return true;
     }
-    return true;
+    tcsetattr(STDIN_FILENO, TCSANOW, &old_tio);
+    return !cin.eof();
 }
 
 void VacaShell::process_line(const string& line) {

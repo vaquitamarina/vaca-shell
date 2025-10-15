@@ -22,8 +22,10 @@ class Builtins {
 private:
     std::vector<std::string> history;           ///< Historial de comandos
     std::map<std::string, std::string> aliases; ///< Aliases definidos
+    int history_index;
     
 public:
+    Builtins();
     /**
      * @brief Verifica si un comando es interno
      * @param cmd Nombre del comando
@@ -99,6 +101,12 @@ public:
      * @return Comando expandido o el original
      */
     std::string expand_alias(const std::string& cmd) const;
+
+    std::string get_previous_command();
+
+    std::string get_next_command();
+    
+    void reset_history_index();
 };
 
 #endif // BUILTINS_HPP
