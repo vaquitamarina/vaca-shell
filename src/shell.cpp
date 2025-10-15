@@ -15,25 +15,27 @@ void VacaShell::initialize() {
     SignalHandler::setup_signals();
     
     cout << "\n";
+    cout << "🐮🐮🐮🐮🐮🐮🐮🐮🐮🐮🐮🐮🐮🐮🐮🐮🐮🐮🐮🐮🐮🐮🐮🐮🐮🐮🐮🐮🐮🐮\n";
     cout << "╔═══════════════════════════════════════════════════════════╗\n";
     cout << "║                                                           ║\n";
-    cout << "║               🐮  VacaShell v1.0  🐮                      ║\n";
+    cout << "║                    VacaShell v1.0                         ║\n";
     cout << "║                                                           ║\n";
     cout << "║          Mini-shell POSIX en C++ para Linux               ║\n";
     cout << "║                                                           ║\n";
-    cout << "║   Características implementadas:                          ║\n";
-    cout << "║   ✓ Ejecución de comandos (fork + execvp)                ║\n";
-    cout << "║   ✓ Resolución de rutas (/bin/ por defecto)              ║\n";
-    cout << "║   ✓ Redirecciones: >, >>, <                              ║\n";
-    cout << "║   ✓ Pipes: cmd1 | cmd2 | cmd3                            ║\n";
-    cout << "║   ✓ Ejecución en segundo plano: &                        ║\n";
-    cout << "║   ✓ Comandos internos: cd, pwd, help, etc.               ║\n";
-    cout << "║   ✓ Manejo de señales: SIGINT, SIGCHLD                   ║\n";
+    cout << "║   Caracteristicas implementadas:                          ║\n";
+    cout << "║   * Ejecucion de comandos (fork + execvp)                 ║\n";
+    cout << "║   * Resolucion de rutas (/bin/ por defecto)               ║\n";
+    cout << "║   * Redirecciones: >, >>, <                               ║\n";
+    cout << "║   * Pipes: cmd1 | cmd2 | cmd3                             ║\n";
+    cout << "║   * Ejecucion en segundo plano: &                         ║\n";
+    cout << "║   * Comandos internos: cd, pwd, help, etc.                ║\n";
+    cout << "║   * Manejo de senales: SIGINT, SIGCHLD                    ║\n";
     cout << "║                                                           ║\n";
     cout << "║   Escribe 'help' para ver ayuda completa                  ║\n";
     cout << "║   Escribe 'salir' o 'exit' para salir                     ║\n";
     cout << "║                                                           ║\n";
     cout << "╚═══════════════════════════════════════════════════════════╝\n";
+    cout << "🐮🐮🐮🐮🐮🐮🐮🐮🐮🐮🐮🐮🐮🐮🐮🐮🐮🐮🐮🐮🐮🐮🐮🐮🐮🐮🐮🐮🐮🐮\n";
     cout << "\n";
 }
 
